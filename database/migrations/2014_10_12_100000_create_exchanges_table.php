@@ -14,10 +14,14 @@ class CreateExchangesTable extends Migration
 	public function up()
 	{
 		Schema::create('exchanges', function (Blueprint $table) {
-			
+
+			$table->increments('id');
+
+			$table->integer('simulation_id');
 			$table->integer('origin_id');
 			$table->integer('destination_id');
 			$table->decimal('amount');
+            $table->boolean('consolidated')->default(false);
 			$table->timestamps();
 
 			$table->foreign('origin_id')->references('id')->on('banks');

@@ -7,7 +7,8 @@
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
 		<div id="mdl-table">
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="document.location = '/simulation/setup'">New Simulation</button>	
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" 
+					onclick="document.location = '/simulation/new'">New Simulation</button>	
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable is-upgraded is-focused">
 				<label class="mdl-button mdl-js-button mdl-button--icon" for="filterSimulationsElement">
 					<i class="material-icons">search</i>
@@ -18,13 +19,15 @@
 				</div>
 			</div>
 
-			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 				<thead>
 					<tr>
 					<th class="mdl-data-table__cell--non-numeric sort" data-sort="description">Simulation</th>
 					<th class="sort" data-sort="max_connections">Connections (Bank)</th>
 					<th class="sort" data-sort="total_amount">Amount (Bank)</th>
 					<th class="sort" data-sort="exchanged_amount">Amount (Exchange)</th>
+					<th class="sort" data-sort="exchanged_amount">Status</th>
+					<th></th>
 					<th>Action</th>
 					</tr>
 				</thead>
@@ -36,9 +39,38 @@
 						<td class="mdl-data-table__cell--non-numeric simulation">{{ $simulation->description }}</td>
 						<td class="max_connections">{{ $simulation->max_connections }}</td>
 						<td class="total_amount">{{ '$'.money_format('%i', $simulation->total_amount) }}</td>
-						<td class="exchanged_amount">{{ '$'.money_format('%i', $simulation->exchanged_amount) }}</td>
+						<td class="exchanged_amount">{{ '$'.money_format('%i', $simulation->exchange_amount) }}</td>
+						<td class="consolidated">{{ $simulation->status() }}</td>
 						<td>
-							<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Consolidate</button>	
+						<button 
+							id="edit-simulation" 
+							class="mdl-button mdl-js-button mdl-button--colored"
+							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }"
+							@if (!$simulation->isNew()) disabled @endif>
+							<i class="material-icons">edit</i>
+					  	</button>	
+						<button 
+							id="delete-simulation" 
+							class="mdl-button mdl-js-button mdl-button--colored"
+							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }"
+							@if (!$simulation->isNew()) disabled @endif>
+							<i class="material-icons">delete</i>
+					  	</button>	
+						</td>
+						<td>
+							@if ($simulation->isNew())
+							<button 
+								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+								onclick="javascript: { document.location = '/simulation/run?simulation={{$simulation->id}}' }">Simulate</button>
+							@elseif ($simulation->isSimulated())
+							<button 
+								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+								onclick="javascript: { document.location = '/simulation/consolidate?simulation={{$simulation->id}}' }">Consolidate</button>
+							@elseif ($simulation->isConsolidated())
+							<button 
+								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+								onclick="javascript: { document.location = '/simulation/revert?simulation={{$simulation->id}}' }">Revert</button>
+							@endif
 						</td>
 					</tr>
 
@@ -58,6 +90,7 @@
 				</td>
 			</tfoot> -->
 		</table>
+		{{ $simulations->links() }}
 
 	<!-- <div class="mdl-layout mdl-js-layout">
 		<main class="mdl-layout__content">
@@ -147,5 +180,6 @@
 			}
 		});	
 	});
+	
 </script>
 @endsection

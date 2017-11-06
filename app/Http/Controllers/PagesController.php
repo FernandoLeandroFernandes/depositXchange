@@ -8,6 +8,7 @@ use \Debugbar;
 use App\Bank;
 use App\Exchange;
 use App\Simulation;
+use App\SimulationBank;
 
 use App\Http\Controllers\Controller;
 
@@ -203,27 +204,187 @@ class PagesController extends Controller {
 		return view('pages.exchanges', compact('exchanges'));
 	}
 
-	public function setupSimulation(Request $request) {
-		return view('pages.setupSimulation');
+	public function simulations(Request $request) {
+		$simulations = Simulation::paginate(5);
+		return view('pages.simulations', compact('simulations'));
+	}
+
+	public function simulation(Request $request, $action) {
+
+		if ($action == "new") {
+
+			if ($request->input('id')) {
+
+				$simulation = Simulation::create(
+					[	'id' => $request->input('id') ],
+					[
+						'description' => $request->input('description'),
+						'exchange_amount' => $request->input('exchange_amount'),
+						'total_amount' => $request->input('total_amount'),
+						'max_connections' => $request->input('max_connections')
+					]
+				);
+			}
+
+			return view('pages.simulation-new', compact('simulation'));
+
+		} else if ($action == "setup") {
+
+			$simulation = Simulation::find($request->input('simulation'));
+
+			if (!$request->input('noupdate')) {
+
+				$simulation = Simulation::updateOrCreate(
+					[	'id' => $request->input('simulation-id') ],
+					[
+						'description' => $request->input('description'),
+						'exchange_amount' => $request->input('exchange_amount'),
+						'total_amount' => $request->input('total_amount'),
+						'max_connections' => $request->input('max_connections')
+					]
+				);
+			}
+
+			$operation = $request->input('operation');
+
+			if ($operation == 'add') {
+
+				try {
+
+					SimulationBank::create([
+						'simulation_id' => $simulation->id,
+						'bank_id' => $request->input('bank-id'),
+					]);
+
+				} catch (Exception $e) {
+
+				}
+
+			} else if ($operation == 'remove') {
+				SimulationBank::destroy(
+					$request->input('simulation_bank-id')
+				);
+			}
+
+			$selected_banks = [];
+			foreach ($simulation->simulationBanks as $simulationBank) {
+				$selected_banks[] = $simulationBank->bank->id;
+			}
+
+			Debugbar::addMessage("Selected banks [".count($selected_banks)."]", 'mylabel');
+			
+			$banks = Bank::whereNotIn('id', $selected_banks)->paginate(20);
+			return view('pages.simulation-setup', compact('simulation', 'banks'));
+			
+
+		} else if ($action == "run") {
+			
+			$simulation = Simulation::find($request->input('simulation'));
+
+			$simulationBanks = DB::select('
+				select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				from "simulation_banks"
+				left outer join "exchanges" on ("exchanges"."simulation_id" = "simulation_banks"."simulation_id" and "exchanges"."origin_id" = "simulation_banks"."bank_id")
+				left outer join "banks" on ("banks"."id" = "simulation_banks"."bank_id")
+				where "simulation_banks"."simulation_id" = '. $simulation->id .'
+				group by "simulation_banks"."bank_id";');
+										
+			$connections_simulated = 0;
+			$amount_simulated = 0;
+			$exchange_amount = 0;
+
+			$simulation_max_connections = $simulation->max_connections;
+			$simulation_exchange_amount = $simulation->exchange_amount;
+			$simulation_total_amount = $simulation->total_amount;
+
+			$data = array();
+
+			while (count($simulationBanks) > 1 && 
+				   $amount_simulated < $simulation_total_amount && 
+				   $connections_simulated < $simulation_max_connections) {
+				
+				$simulationBankA = $simulationBanks[rand(0, count($simulationBanks)-1)];
+				do {
+					$simulationBankB = $simulationBanks[rand(0, count($simulationBanks)-1)];
+				} while ($simulationBankA == $simulationBankB);
+				
+				$exchange_amount = min([$simulation_exchange_amount, 
+										$this->availableAmount($simulationBankA, $data),
+										$this->availableAmount($simulationBankB, $data)]);
+
+				$exchangeA = Exchange::create([
+					'simulation_id' => $simulation->id,
+					'origin_id' => $simulationBankA->bank_id,
+					'destination_id' => $simulationBankB->bank_id,
+					'amount' => $exchange_amount
+				]);
+				$this->useAmount($simulationBankA, $exchange_amount, $data);
+				$this->useConnection($simulationBankA, $data);
+				
+				$exchangeA = Exchange::create([
+					'simulation_id' => $simulation->id,
+					'origin_id' => $simulationBankB->bank_id,
+					'destination_id' => $simulationBankA->bank_id,
+					'amount' => $exchange_amount
+				]);
+				$this->useAmount($simulationBankB, $exchange_amount, $data);
+				$this->useConnection($simulationBankB, $data);
+
+				$amount_simulated += $exchange_amount;
+				$connections_simulated++;					
+			}
+			
+			Simulation::updateOrCreate(['id' => $simulation->id], [ 'status' => 1]);
+			
+			$simulationBanks = DB::select('
+				select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				from "simulation_banks"
+				left outer join "exchanges" on ("exchanges"."origin_id" = "simulation_banks"."bank_id")
+				left outer join "banks" on ("banks"."id" = "simulation_banks"."bank_id")
+				where "simulation_banks"."simulation_id" = '. $simulation->id .'
+				group by "simulation_banks"."bank_id";');
+
+			return view('pages.simulation-run', compact('simulation', 'simulationBanks'));
+				
+		} else {
+			Debugbar::addMessage("Unknown action [$action]!", 'mylabel');
+		}
+
+		$simulations = Simulation::paginate(20);
+		return view('pages.simulations', compact('simulations'));
+	}
+
+	function availableAmount($simulationBank, $data) {
+		if (empty($data[$simulationBank->bank_id][0])) {
+			Debugbar::addMessage("NO data[$simulationBank->bank_id][0]!", 'mylabel');
+			$available = ($simulationBank->max_amount - $simulationBank->used_amount);
+			$data[$simulationBank->bank_id][0] = ($available >= 0) ? $available : 0;
+			Debugbar::addMessage("Data written in data[simulationBank->bank_id][0]=[$data[$simulationBank->bank_id]!", 'mylabel');
+			
+		} else {
+			Debugbar::addMessage("HAS data[$simulationBank->bank_id][0]!", 'mylabel');
+		}
+		return $data[$simulationBank->bank_id][0];
 	}
 	
-	public function newSimulation(Request $request) {
-
-		$simulation = new Simulation();
-
-		$simulations = Simulation::all();
-		return view('pages.simulations', compact('simulations'));
+	function availableConnections($simulationBank, $data) {
+		if (empty($data[$simulationBank->bank_id][1])) {
+			$available = ($simulationBank->max_connections - $simulationBank->used_connections);
+			$data[$simulationBank->bank_id][1] = ($available >= 0 ? $available : 0);
+		}
+		return $data[$simulationBank->bank_id][1];
 	}
-
-	public function runSimulation(Request $request) {
-		return view('pages.runsimulation');
+	
+	function useAmount($simulationBank, $amount, $data) {
+		$available = $this->availableAmount($simulationBank, $data) - $amount;
+		$data[$simulationBank->bank_id][0] -= ($available > 0 ? $available : 0);
 	}
-
-	public function simulations(Request $request) {
-		$simulations = Simulation::all();
-		return view('pages.simulations', compact('simulations'));
+	
+	function useConnection($simulationBank, $data) {
+		$available = $this->availableConnections($simulationBank, $data) - 1;
+		$data[$simulationBank->bank_id][1] -= ($available > 0 ? $available : 0);
 	}
-
+	
 	public function status(Request $request) {
 		return view('pages.status');
 	}

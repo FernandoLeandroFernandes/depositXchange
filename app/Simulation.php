@@ -7,11 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 class Simulation extends Model
 {
 	protected $fillable = [
-		'id', 
 		'description', 
 		'max_connections', 
-        'exchanged_amount',
+        'exchange_amount',
         'total_amount'
     ];
 
+	public function simulationBanks() {
+		return $this->hasMany('App\SimulationBank');
+	}
+
+	public function isNew() {
+		return $this->status < 1;
+	}
+
+	public function isSimulated() {
+		return $this->status == 1;
+	}
+
+	public function isConsolidated() {
+		return $this->status > 1;
+	}
+
+	public function status() {
+		// Just to remember: ternary operators in PHP sucks...
+		return ($this->isNew() ? 'New' : ($this->isSimulated() ? 'Simulated' : ($this->isConsolidated() ? 'Consolidated' : '...')));
+	}
 }

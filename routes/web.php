@@ -12,14 +12,15 @@
 */
 
 Route::get('/', 'PagesController@index');
-Route::get('/about', 'PagesController@about');
 
 Route::any('/bank/{action}', 'PagesController@bank');
-Route::post('/bank/{action}', 'PagesController@bank');
 Route::get('/banks', 'PagesController@banks');
+
 Route::get('/exchanges', 'PagesController@exchanges');
+
+Route::any('/simulation/{action}', 'PagesController@simulation');
 Route::get('/simulations', 'PagesController@simulations');
-Route::get('/simulation/setup', 'PagesController@setupSimulation');
-Route::get('/simulation/save', 'PagesController@saveSimulation');
-Route::get('/simulation/run', 'PagesController@runSimulation');
+
 Route::get('/status', 'PagesController@status');
+
+// Route::get('/about', 'PagesController@about');

@@ -7,8 +7,8 @@
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
 		<h4>Description: {{ $simulation->description }}</h4>
-		<h4>Amount resourses: {{ '$'.money_format('%i', $simulation->total_amount) }}</h4>
-		<h4>Exchange amount: {{ '$'.money_format('%i', $simulation->exchange_amount) }}</h4>
+		<h4>Amount resourses: {{ '$'.number_format($simulation->total_amount, 2) }}</h4>
+		<h4>Exchange amount: {{ '$'.number_format($simulation->exchange_amount, 2) }}</h4>
 		<h4>Maximum connections: {{ $simulation->max_connections }}</h4>
 		<h4>Status: {{ $simulation->status() }}</h4>
 	</div>
@@ -34,7 +34,7 @@
 
 				<tr>
 					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($simulationBank->bank_name, 0, 30) }}</td>
-					<td class="amount">{{ '$'.money_format('%i', $simulationBank->used_amount) }}</td>
+					<td class="amount">{{ '$'.number_format($simulationBank->used_amount, 2) }}</td>
 					<td class="connections">{{ $simulationBank->used_connections }}</td>
 				</tr>
 

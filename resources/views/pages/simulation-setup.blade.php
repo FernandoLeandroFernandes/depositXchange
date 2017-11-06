@@ -95,7 +95,7 @@
 
 				<tr>
 					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($simulationBank->bank->name, 0, 30) }}</td>
-					<td class="amount">{{ '$'.money_format('%i', $simulationBank->bank->max_amount) }}</td>
+					<td class="amount">{{ '$'.number_format($simulationBank->bank->max_amount, 2) }}</td>
 					<td class="connections">{{ $simulationBank->bank->max_connections }}</td>
 					<td>
 					<button 
@@ -145,7 +145,7 @@
 
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric bank">{{ substr($bank->name, 0, 30) }}</td>
-						<td class="amount">{{ '$'.money_format('%i', $bank->max_amount) }}</td>
+						<td class="amount">{{ '$'.number_format($bank->max_amount, 2) }}</td>
 						<td class="connections">{{ $bank->max_connections }}</td>
 						<td>
 						<button 

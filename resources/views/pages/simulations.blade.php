@@ -38,8 +38,8 @@
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric simulation">{{ $simulation->description }}</td>
 						<td class="max_connections">{{ $simulation->max_connections }}</td>
-						<td class="total_amount">{{ '$'.money_format('%i', $simulation->total_amount) }}</td>
-						<td class="exchanged_amount">{{ '$'.money_format('%i', $simulation->exchange_amount) }}</td>
+						<td class="total_amount">{{ '$'.number_format($simulation->total_amount, 2) }}</td>
+						<td class="exchanged_amount">{{ '$'.number_format($simulation->exchange_amount, 2) }}</td>
 						<td class="consolidated">{{ $simulation->status() }}</td>
 						<td>
 						<button 

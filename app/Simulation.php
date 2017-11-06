@@ -10,7 +10,8 @@ class Simulation extends Model
 		'description', 
 		'max_connections', 
         'exchange_amount',
-        'total_amount'
+		'total_amount',
+		'status'
     ];
 
 	public function simulationBanks() {

@@ -6,10 +6,16 @@
 		<h3 class="mdl-card__title-text">Simulation Results</h3>
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
+		<h4>Description: {{ $simulation->description }}</h4>
+		<h4>Amount resourses: {{ '$'.money_format('%i', $simulation->total_amount) }}</h4>
+		<h4>Exchange amount: {{ '$'.money_format('%i', $simulation->exchange_amount) }}</h4>
+		<h4>Maximum connections: {{ $simulation->max_connections }}</h4>
+		<h4>Status: {{ $simulation->status() }}</h4>
+	</div>
+	<div class="mdl-card__actions mdl-card--border">
 		<div id="mdl-table">
 			<div class="mdl-card__title">
 				<h3 class="mdl-card__title-text">Exchanges</h3>
-				<p>{{ $simulation->status() }}</p>
 			</div>
 
 			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -17,9 +23,8 @@
 				<thead>
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
-						<th data-sort="resources">Available resources</th>
-						<th data-sort="connections">Available connections</th>
-						<th>Actions</th>
+						<th data-sort="resources">Used resources</th>
+						<th data-sort="connections">Used connections</th>
 					</tr>
 				</thead>
 				@endif
@@ -29,19 +34,12 @@
 
 				<tr>
 					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($simulationBank->bank_name, 0, 30) }}</td>
-					<td class="amount">{{ '$'.money_format('%i', $simulationBank->max_amount) }}</td>
-					<td class="connections">{{ $simulationBank->max_connections }}</td>
-					<!-- <td>
-					<button 
-						class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-						onclick="javascript:{ removeSimulationBank({{ $simulationBank->id }}); }">
-						Remove
-					</button>
-					</td> -->
+					<td class="amount">{{ '$'.money_format('%i', $simulationBank->used_amount) }}</td>
+					<td class="connections">{{ $simulationBank->used_connections }}</td>
 				</tr>
 
 				@empty
-					<p style="margin-left:20px;">No banks selected.</p>
+					<p style="margin-left:20px;">No banks in this simulation.</p>
 				@endforelse
 				</tbody>
 			</table>

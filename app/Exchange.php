@@ -13,6 +13,10 @@ class Exchange extends Model
 		'amount'
 	];
 
+	public function simulation() {
+		return $this->belongsTo('App\Simulation');
+	}
+
 	public function origin() {
 		return $this->belongsTo('App\Bank');
 	}

@@ -2,7 +2,10 @@
 
 namespace App;
 
+use \Debugbar;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Simulation extends Model
 {
@@ -16,6 +19,12 @@ class Simulation extends Model
 
 	public function simulationBanks() {
 		return $this->hasMany('App\SimulationBank');
+	}
+
+	public function hasSimulationBanks() {
+
+		$select = DB::select('select count(id) as banks from simulation_banks where simulation_id = ' . $this->id)[0];
+		return ((int)($select->banks) > 0);
 	}
 
 	public function isNew() {

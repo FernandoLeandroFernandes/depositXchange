@@ -2,20 +2,22 @@
 
 @section('content')
 <div class="mdl-card">
+	<div class="mdl-dialog__actions mdl-dialog__actions">
+		<button id="back-button" type="button" class="mdl-button" onclick="javascript: { document.location = '/simulations'; }">Back to Simulations</button>
+	</div>
 	<div class="mdl-card__title">
 		<h3 class="mdl-card__title-text">Simulation Results</h3>
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
 		<h4>Description: {{ $simulation->description }}</h4>
-		<h4>Amount resourses: {{ '$'.number_format($simulation->total_amount, 2) }}</h4>
+		<h4>Amount resourses (simulated/maximum): {{ '$'.number_format($simulation_total_amount, 2) }} / {{ '$'.number_format($simulation->total_amount, 2) }}</h4>
 		<h4>Exchange amount: {{ '$'.number_format($simulation->exchange_amount, 2) }}</h4>
-		<h4>Maximum connections: {{ $simulation->max_connections }}</h4>
-		<h4>Status: {{ $simulation->status() }}</h4>
+		<h4>Connections (simulated/maximum): {{ $simulation_max_connections}} / {{$simulation->max_connections }}</h4>
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
 		<div id="mdl-table">
 			<div class="mdl-card__title">
-				<h3 class="mdl-card__title-text">Exchanges</h3>
+				<h3 class="mdl-card__title-text">Banks Simulated</h3>
 			</div>
 
 			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">

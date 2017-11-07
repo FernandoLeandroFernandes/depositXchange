@@ -20,6 +20,7 @@
 			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 				<thead>
 					<tr>
+						<th class="mdl-data-table__cell--non-numeric sort" data-sort="simulation">Simulation</th>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="origin">Origin</th>
 						<th class="sort" data-sort="destination">Destination</th>
 						<th class="sort" data-sort="amount">Amount</th>
@@ -31,6 +32,7 @@
 				@forelse ($exchanges as $exchange)
 
 					<tr>
+						<td class="mdl-data-table__cell--non-numeric origin">{{ $exchange->simulation->description }}</td>
 						<td class="mdl-data-table__cell--non-numeric origin">{{ $exchange->origin->name }}</td>
 						<td class="destination">{{ $exchange->destination->name }}</td>
 						<td class="amount">{{ '$'.$exchange->amount }}</td>
@@ -96,7 +98,7 @@
 <script defer>
 	jQuery( document ).ready(function() {
 		var options = {
-			valueNames: ['origin', 'destination', 'amount']
+			valueNames: ['simulation', 'origin', 'destination', 'amount']
 		}, 
 		documentTable = new List('mdl-table', options);
 

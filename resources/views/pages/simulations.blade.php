@@ -45,6 +45,12 @@
 						<button 
 							id="edit-simulation" 
 							class="mdl-button mdl-js-button mdl-button--colored"
+							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }">
+							<i class="material-icons">search</i>
+					  	</button>	
+						<button 
+							id="edit-simulation" 
+							class="mdl-button mdl-js-button mdl-button--colored"
 							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }"
 							@if (!$simulation->isNew()) disabled @endif>
 							<i class="material-icons">edit</i>
@@ -52,8 +58,8 @@
 						<button 
 							id="delete-simulation" 
 							class="mdl-button mdl-js-button mdl-button--colored"
-							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }"
-							@if (!$simulation->isNew()) disabled @endif>
+							onclick="javascript:{ document.location = '/simulation/delete?simulation={{ $simulation->id }}'; }"
+							@if ($simulation->isConsolidated()) disabled @endif>
 							<i class="material-icons">delete</i>
 					  	</button>	
 						</td>
@@ -61,8 +67,13 @@
 							@if ($simulation->isNew())
 							<button 
 								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-								onclick="javascript: { document.location = '/simulation/run?simulation={{$simulation->id}}' }">Simulate</button>
+								onclick="javascript: { document.location = '/simulation/run?simulation={{$simulation->id}}' }"
+								@if (!$simulation->hasSimulationBanks()) disabled @endif>Simulate</button>
 							@elseif ($simulation->isSimulated())
+							<button 
+								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+								onclick="javascript: { document.location = '/simulation/run?simulation={{$simulation->id}}' }"
+								@if (!$simulation->hasSimulationBanks()) disabled @endif>Resimulate</button>
 							<button 
 								class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
 								onclick="javascript: { document.location = '/simulation/consolidate?simulation={{$simulation->id}}' }">Consolidate</button>

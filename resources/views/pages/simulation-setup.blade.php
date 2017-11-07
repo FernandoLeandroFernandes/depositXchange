@@ -228,8 +228,6 @@
 
 	function addSimulationBank(bank) {
 	
-		alert('adding bank ['+bank+'] to simulation ['+{{ $simulation->id }}+']');
-
 		$("form#simulation-bank input#operation")[0].value = 'add';
 		$("form#simulation-bank input#bank-id")[0].value = bank;
 		$("form#simulation-bank").submit();
@@ -237,8 +235,6 @@
 
 	function removeSimulationBank(bank) {
 	
-		alert('removing bank ['+bank+'] to simulation ['+{{ $simulation->id }}+']');
-
 		$("form#simulation-bank input#operation")[0].value = 'remove';
 		$("form#simulation-bank input#simulation_bank-id")[0].value = bank;
 		$("form#simulation-bank").submit();

@@ -29,7 +29,10 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="city">City</th>
-						<th data-sort="amount">Amount</th>
+						<th data-sort="amount">Available resources</th>
+						<th data-sort="amount">Total resources</th>
+						<th data-sort="amount">Usage(%)</th>
+						<th data-sort="connections">Max. Connections</th>
 						<th data-sort="connections">Connections</th>
 						<th>Actions</th>
 					</tr>
@@ -41,8 +44,11 @@
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric bank">{{ substr($bank->name, 0, 30) }}</td>
 						<td class="mdl-data-table__cell--non-numeric city">{{ $bank->city }}</td>
+						<td class="amount">{{ '$'.number_format($bank->max_amount-$bank->used_amount, 2) }}</td>
 						<td class="amount">{{ '$'.number_format($bank->max_amount, 2) }}</td>
+						<td class="amount">{{ number_format($bank->used_amount/(($bank->max_amount>0)?$bank->max_amount:1), 2).'%' }}</td>
 						<td class="connections">{{ $bank->max_connections }}</td>
+						<td class="connections">{{ $bank->used_connections }}</td>
 						<td>
 						<button 
 							class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
@@ -68,7 +74,7 @@
 					</td>
 				</tfoot> -->
 			</table>
-			{{ $banks->links() }}
+			{!! str_replace('/?', '/banks?', $banks->render()) !!}
 		</div>
 
 		<dialog class="mdl-dialog" id="bank-modal-dialog">

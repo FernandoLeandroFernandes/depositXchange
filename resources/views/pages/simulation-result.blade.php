@@ -41,7 +41,9 @@
 				<thead>
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
+						<th data-sort="resources">Total  resources</th>
 						<th data-sort="resources">Used resources</th>
+						<th data-sort="connections">Total connections</th>
 						<th data-sort="connections">Used connections</th>
 					</tr>
 				</thead>
@@ -52,7 +54,9 @@
 
 				<tr>
 					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($simulationBank->bank_name, 0, 30) }}</td>
+					<td class="amount">{{ '$'.number_format($simulationBank->max_amount, 2) }}</td>
 					<td class="amount">{{ '$'.number_format($simulationBank->used_amount, 2) }}</td>
+					<td class="connections">{{ $simulationBank->max_connections }}</td>
 					<td class="connections">{{ $simulationBank->used_connections }}</td>
 				</tr>
 

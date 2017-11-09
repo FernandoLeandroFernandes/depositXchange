@@ -15,6 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
+
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class PagesController extends Controller {
 
@@ -33,7 +37,29 @@ class PagesController extends Controller {
 	}
 
 	public function banks(Request $request) {
-		$banks = Bank::paginate(5);
+
+		$select = DB::select('
+			select "banks".id, "banks"."name", "banks"."city", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+			from "banks"
+			left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "banks"."id")
+			group by "banks"."id";');
+
+		$itemsPerPage = 8;
+		$currentPage  = LengthAwarePaginator::resolveCurrentPage('page');
+		$collection   = new Collection($select);
+		
+		$paginatedResults = $collection->slice(($currentPage - 1) * $itemsPerPage, $itemsPerPage)->all();
+		$banks = new LengthAwarePaginator(
+							$paginatedResults, 
+							count($collection), 
+							$itemsPerPage, 
+							$currentPage,
+							[
+								'path' => LengthAwarePaginator::resolveCurrentPath(),
+								'currentPage' => 'currentPage',
+							]);
+
+
 		return view('pages.banks', compact('banks'));
 	}
 
@@ -54,11 +80,12 @@ class PagesController extends Controller {
 		}
 
 		$banks = Bank::paginate(20);
+
 		return view('pages.banks', compact('banks'));
 	}
 
 	public function exchanges(Request $request) {
-		$exchanges = Exchange::where('consolidated', 1)->paginate(5);
+		$exchanges = Exchange::where('consolidated', 1)->paginate(10);
 		return view('pages.exchanges', compact('exchanges'));
 	}
 
@@ -108,13 +135,12 @@ class PagesController extends Controller {
 			if ($operation == 'add') {
 
 				try {
-
 					$simulationBank = SimulationBank::create([
 						'simulation_id' => $simulation->id,
 						'bank_id' => $request->input('bank-id'),
 					]);
 
-					return  response()->json($simulationBank);
+					// return response()->json($simulationBank);
 
 				} catch (Exception $e) {
 
@@ -124,16 +150,58 @@ class PagesController extends Controller {
 				SimulationBank::destroy(
 					$request->input('simulation_bank-id')
 				);
-				return  response()->json(['status'=>'processsed']);
+				// return  response()->json(['status'=>'processsed']);
 			}
 
-			$selected_banks = [];
+			$selectedBanks = DB::select('
+				select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				from "simulation_banks"
+				left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "simulation_banks"."bank_id")
+				left outer join "banks" on ("banks"."id" = "simulation_banks"."bank_id")
+				where "simulation_banks"."simulation_id" = ? 
+				group by "simulation_banks"."bank_id";', 
+				[$simulation->id]);
+
+			$chosenBanks = [];
 			foreach ($simulation->simulationBanks as $simulationBank) {
-				$selected_banks[] = $simulationBank->bank->id;
+				$chosenBanks[] = $simulationBank->bank->id;
 			}
 
-			$banks = Bank::whereNotIn('id', $selected_banks)->paginate(20);
-			return view('pages.simulation-setup', compact('simulation', 'banks'));
+			$select = DB::select('
+				select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				from "banks"
+				left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "banks"."id")
+				where  NOT "banks".id IN ('.implode($chosenBanks, ',').')
+				group by "banks"."id";');
+			
+			$itemsPerPage = 6;
+			$currentPage  = LengthAwarePaginator::resolveCurrentPage('page');
+			$collection   = new Collection($select);
+			
+			$paginatedResults = $collection->slice(($currentPage - 1) * $itemsPerPage, $itemsPerPage)->all();
+			$availableBanks = new LengthAwarePaginator(
+								$paginatedResults, 
+								count($collection), 
+								$itemsPerPage, 
+								$currentPage,
+								[
+									'path' => LengthAwarePaginator::resolveCurrentPath(),
+									'currentPage' => 'currentPage',
+								]);
+		
+
+				// select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				// from "simulation_banks"
+				// left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "simulation_banks"."bank_id")
+				// left outer join "banks" on ("banks"."id" = "simulation_banks"."bank_id")
+				// where "simulation_banks"."simulation_id" = ? AND "banks".id NOT IN (?)
+				// group by "simulation_banks"."bank_id";', 
+				// [$simulation->id, implode($chosenBanks, ',')]);
+
+				// $availableBanks = Bank::whereNotIn('id', $chosenBanks)->paginate(20);
+
+				
+			return view('pages.simulation-setup', compact('simulation', 'selectedBanks', 'availableBanks'));
 			
 
 		} else if ($action == "run") {

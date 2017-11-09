@@ -79,11 +79,12 @@
 			</div> -->
 
 			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-				@if (!$simulation->simulationBanks->isEmpty())
+				@if (count($selectedBanks))
 				<thead>
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
 						<th data-sort="resources">Available resources</th>
+						<th data-sort="resources">Usage(%)</th>
 						<th data-sort="connections">Available connections</th>
 						<th>Actions</th>
 					</tr>
@@ -91,16 +92,17 @@
 				@endif
 				<tbody class="list">
 
-				@forelse ($simulation->simulationBanks as $simulationBank)
+				@forelse ($selectedBanks as $selectedBank)
 
 				<tr>
-					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($simulationBank->bank->name, 0, 30) }}</td>
-					<td class="amount">{{ '$'.number_format($simulationBank->bank->max_amount, 2) }}</td>
-					<td class="connections">{{ $simulationBank->bank->max_connections }}</td>
+					<td class="mdl-data-table__cell--non-numeric bank">{{ substr($selectedBank->bank_name, 0, 30) }}</td>
+					<td class="amount">{{ '$'.number_format($selectedBank->max_amount - $selectedBank->used_amount, 2) }}</td>
+					<td class="amount">{{ number_format($selectedBank->used_amount/(($selectedBank->max_amount>0)?$selectedBank->max_amount:1), 2).'%' }}</td>
+					<td class="connections">{{ $selectedBank->max_connections - $selectedBank->used_connections }}</td>
 					<td>
 					<button 
 						class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-						onclick="javascript:{ removeSimulationBank({{ $simulation->id }}, {{ $simulationBank->id }}); }">
+						onclick="javascript:{ removeSimulationBank({{ $simulation->id }}, {{ $selectedBank->bank_id }}); }">
 						Remove
 					</button>
 					</td>
@@ -136,22 +138,28 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
 						<th data-sort="resources">Available resources</th>
+						<th data-sort="resources">Usage(%)</th>
 						<th data-sort="connections">Available connections</th>
+
+						<!-- <th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
+						<th data-sort="resources">Total resources</th>
+						<th data-sort="connections">Total connections</th> -->
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody class="list">
 
-				@forelse ($banks as $bank)
+				@forelse ($availableBanks as $availableBank)
 
 					<tr>
-						<td class="mdl-data-table__cell--non-numeric bank">{{ substr($bank->name, 0, 30) }}</td>
-						<td class="amount">{{ '$'.number_format($bank->max_amount, 2) }}</td>
-						<td class="connections">{{ $bank->max_connections }}</td>
+						<td class="mdl-data-table__cell--non-numeric bank">{{ substr($availableBank->bank_name, 0, 30) }}</td>
+						<td class="amount">{{ '$'.number_format($availableBank->max_amount - $availableBank->used_amount, 2) }}</td>
+						<td class="amount">{{ number_format($availableBank->used_amount / (($availableBank->max_amount>0)?$availableBank->max_amount:1), 2).'%' }}</td>
+						<td class="connections">{{ $availableBank->max_connections }}</td>
 						<td>
 						<button 
 							class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-							onclick="javascript:{ addSimulationBank({{ $simulation->id }}, {{ $bank->id }}); }">
+							onclick="javascript:{ addSimulationBank({{ $simulation->id }}, {{ $availableBank->bank_id }}); }">
 							Select
 						</button>
 						</td>
@@ -162,7 +170,13 @@
 				@endforelse
 				</tbody>
 			</table>
-			{{ $banks->appends(['noupdate' => 'on', 'simulation' => $simulation->id])->links() }}
+			{!! str_replace('/?', '/simulation?', $availableBanks->appends(['noupdate'=>'on', 'simulation'=>$simulation->id])->render()) !!}
+			<?php
+			/*
+			{!! str_replace('/?', '/simulation?', $availableBanks->appends($_GET)->render()) !!}
+			{{ $availableBanks->appends($_GET)->links() }}
+			*/
+			?>
 
 			<form id="simulation-bank" action="/simulation/setup" method="POST">
 				{{ csrf_field() }}
@@ -231,58 +245,58 @@
 
 	function addSimulationBank(simulation, bank) {
 	
-		$.ajax({
-			url: '/simulation/setup',
-			type: 'POST',
-			contentType: 'application/json',
-			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-			data: 
-				JSON.stringify({
-					'operation': 'add',
-					'noupdate' : 'on',
-					'simulation': simulation,
-					'bank-id': bank,
-				}),
-			error: function(reject) {
-				$('#snack').html('<p>An error has occurred</p>');
-			},
-			dataType: 'json',
-			success: function(data) {
-				location.reload(true);
-			},
-		});
+		// $.ajax({
+		// 	url: '/simulation/setup',
+		// 	type: 'POST',
+		// 	contentType: 'application/json',
+		// 	headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+		// 	data: 
+		// 		JSON.stringify({
+		// 			'operation': 'add',
+		// 			'noupdate' : 'on',
+		// 			'simulation': simulation,
+		// 			'bank-id': bank,
+		// 		}),
+		// 	error: function(reject) {
+		// 		$('#snack').html('<p>An error has occurred</p>');
+		// 	},
+		// 	dataType: 'json',
+		// 	success: function(data) {
+		// 		location.reload(true);
+		// 	},
+		// });
 
-		// $("form#simulation-bank input#operation")[0].value = 'add';
-		// $("form#simulation-bank input#bank-id")[0].value = bank;
-		// $("form#simulation-bank").submit();
+		$("form#simulation-bank input#operation")[0].value = 'add';
+		$("form#simulation-bank input#bank-id")[0].value = bank;
+		$("form#simulation-bank").submit();
 	}
 
 	function removeSimulationBank(simulation, bank) {
 
-		$.ajax({
-			url: '/simulation/setup',
-			type: 'POST',
-			contentType: 'application/json',
-			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-			data: 
-				JSON.stringify({
-					'operation': 'remove',
-					'noupdate' : 'on',
-					'simulation': simulation,
-					'simulation_bank-id': bank,
-				}),
-			error: function(reject) {
-				$('#snack').html('<p>An error has occurred</p>');
-			},
-			dataType: 'json',
-			success: function(data) {
-				location.reload(true);
-			},
-		});
+		// $.ajax({
+		// 	url: '/simulation/setup',
+		// 	type: 'POST',
+		// 	contentType: 'application/json',
+		// 	headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+		// 	data: 
+		// 		JSON.stringify({
+		// 			'operation': 'remove',
+		// 			'noupdate' : 'on',
+		// 			'simulation': simulation,
+		// 			'simulation_bank-id': bank,
+		// 		}),
+		// 	error: function(reject) {
+		// 		$('#snack').html('<p>An error has occurred</p>');
+		// 	},
+		// 	dataType: 'json',
+		// 	success: function(data) {
+		// 		location.reload(true);
+		// 	},
+		// });
 	
-		// $("form#simulation-bank input#operation")[0].value = 'remove';
-		// $("form#simulation-bank input#simulation_bank-id")[0].value = bank;
-		// $("form#simulation-bank").submit();
+		$("form#simulation-bank input#operation")[0].value = 'remove';
+		$("form#simulation-bank input#simulation_bank-id")[0].value = bank;
+		$("form#simulation-bank").submit();
 	}
 
 </script>

@@ -48,13 +48,6 @@
 							onclick="javascript:{ document.location = '/simulation/{{($simulation->isConsolidated())?'results':'setup'}}?noupdate=on&simulation={{ $simulation->id }}'; }">
 							<i class="material-icons">search</i>
 					  	</button>	
-						<!-- <button 
-							id="edit-simulation" 
-							class="mdl-button mdl-js-button mdl-button--colored"
-							onclick="javascript:{ document.location = '/simulation/setup?noupdate=on&simulation={{ $simulation->id }}'; }"
-							@if (!$simulation->isNew()) disabled @endif>
-							<i class="material-icons">edit</i>
-					  	</button>	 -->
 						<button 
 							id="delete-simulation" 
 							class="mdl-button mdl-js-button mdl-button--colored"

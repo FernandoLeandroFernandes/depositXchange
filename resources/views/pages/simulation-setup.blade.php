@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mdl-card">
+<div class="mdl-card-simulation-setup">
 	<div class="mdl-card__title">
 		<h3 class="mdl-card__title-text">Setup Simulation</h3>
 	</div>
@@ -23,7 +23,7 @@
 					required>
 				<label class="mdl-textfield__label" for="description">Description</label>
 			</div>
-			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			<!-- <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input 
 					class="mdl-textfield__input" 
 					type="text" 
@@ -46,7 +46,7 @@
 					required>
 				<label class="mdl-textfield__label" for="total_amount">Total Amount per Bank</label>
 				<span class="mdl-textfield__error">Input is not a number!</span>
-			</div>
+			</div> -->
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input 
 					class="mdl-textfield__input" 
@@ -100,7 +100,7 @@
 					<td>
 					<button 
 						class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-						onclick="javascript:{ removeSimulationBank({{ $simulationBank->id }}); }">
+						onclick="javascript:{ removeSimulationBank({{ $simulation->id }}, {{ $simulationBank->id }}); }">
 						Remove
 					</button>
 					</td>
@@ -113,6 +113,8 @@
 			</table>
 
 		</div>				
+		<br>
+		<br>
 
 <!-- TABLE: BANKS USED IN THIS SIMULATION -->
 
@@ -129,7 +131,6 @@
 					<label class="mdl-textfield__label" for="sample-expandable">(input)</label>
 				</div>
 			</div>
-
 			<table id='mdl-available-tables' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 				<thead>
 					<tr>
@@ -150,7 +151,7 @@
 						<td>
 						<button 
 							class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-							onclick="javascript:{ addSimulationBank({{ $bank->id }}); }">
+							onclick="javascript:{ addSimulationBank({{ $simulation->id }}, {{ $bank->id }}); }">
 							Select
 						</button>
 						</td>
@@ -194,17 +195,19 @@
 		});	
 
 		// Setup input fields
-		var passedValidation = function(input){
-			valid =
+		var passValidation = function(input){
+			var amount = $("input#exchange_amount")[0].value;
+			var isAmountNumeric = (!isNaN(parseFloat(amount)) && isFinite(amount));
+			filled =
 				$("input#description")[0].value &&
-				$("input#max_connections")[0].value &&
-				$("input#total_amount")[0].value &&
+				// $("input#max_connections")[0].value &&
+				// $("input#total_amount")[0].value &&
 				$("input#exchange_amount")[0].value;
-			return valid;
+			return filled && isAmountNumeric;
 		};
 
 		var onChange = function(input){
-			$('button#save-button').prop('disabled', !passedValidation());
+			$('button#save-button').prop('disabled', !passValidation());
 		};
 
 		$('button#save-button').on('click', function () {
@@ -220,24 +223,66 @@
 			document.location = "/simulations";
 		});
 		
-		$('input').on('keypress', (input) => {
+		$('input').on('keyup', (input) => {
 			onChange(input);
 		});
 
 	});
 
-	function addSimulationBank(bank) {
+	function addSimulationBank(simulation, bank) {
 	
-		$("form#simulation-bank input#operation")[0].value = 'add';
-		$("form#simulation-bank input#bank-id")[0].value = bank;
-		$("form#simulation-bank").submit();
+		$.ajax({
+			url: '/simulation/setup',
+			type: 'POST',
+			contentType: 'application/json',
+			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+			data: 
+				JSON.stringify({
+					'operation': 'add',
+					'noupdate' : 'on',
+					'simulation': simulation,
+					'bank-id': bank,
+				}),
+			error: function(reject) {
+				$('#snack').html('<p>An error has occurred</p>');
+			},
+			dataType: 'json',
+			success: function(data) {
+				location.reload(true);
+			},
+		});
+
+		// $("form#simulation-bank input#operation")[0].value = 'add';
+		// $("form#simulation-bank input#bank-id")[0].value = bank;
+		// $("form#simulation-bank").submit();
 	}
 
-	function removeSimulationBank(bank) {
+	function removeSimulationBank(simulation, bank) {
+
+		$.ajax({
+			url: '/simulation/setup',
+			type: 'POST',
+			contentType: 'application/json',
+			headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+			data: 
+				JSON.stringify({
+					'operation': 'remove',
+					'noupdate' : 'on',
+					'simulation': simulation,
+					'simulation_bank-id': bank,
+				}),
+			error: function(reject) {
+				$('#snack').html('<p>An error has occurred</p>');
+			},
+			dataType: 'json',
+			success: function(data) {
+				location.reload(true);
+			},
+		});
 	
-		$("form#simulation-bank input#operation")[0].value = 'remove';
-		$("form#simulation-bank input#simulation_bank-id")[0].value = bank;
-		$("form#simulation-bank").submit();
+		// $("form#simulation-bank input#operation")[0].value = 'remove';
+		// $("form#simulation-bank input#simulation_bank-id")[0].value = bank;
+		// $("form#simulation-bank").submit();
 	}
 
 </script>

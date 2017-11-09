@@ -23,4 +23,4 @@ Route::get('/simulations', 'PagesController@simulations');
 
 Route::get('/status', 'PagesController@status');
 
-// Route::get('/about', 'PagesController@about');
+Route::get('/about', 'PagesController@about');

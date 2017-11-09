@@ -1,14 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mdl-card">
+<div class="mdl-card-banks">
 	<div class="mdl-card__title">
 		<h3 class="mdl-card__title-text">Banks</h3>
 		<!-- <h2>Banks</h2> -->
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
 		<div id="mdl-table">
-			<button id="add-bank-modal" type="button" class="mdl-button mdl-button--raised">Add Bank</button>
+			<button 
+				type="button" 	
+				id="add-bank-modal" 
+				class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+				Add Bank
+			</button>
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable is-upgraded is-focused">
 				<label class="mdl-button mdl-js-button mdl-button--icon" for="filterBanksElement">
 					<i class="material-icons">search</i>
@@ -167,21 +172,33 @@
 				success: function(data) {
 					location.reload();
 				},
-			});			
+			});
 		};
-        var closeDialogHandler = function(event) {
+		
+		var closeDialogHandler = function(event) {
             dialog.close();
         };
-        var addBankHandler = function(event) {
-            dialog.showModal();
-        };
+		
+		var addBankHandler = function(event) {
+
+			$("#id")[0].value = '';
+			$("#bank")[0].value = '';
+			$("#city")[0].value = '';
+			$("#amount")[0].value = '';
+			$("#connections")[0].value = '';
+			
+			dialog.showModal();
+		};
+		
         buttonAddBank.addEventListener('click', addBankHandler);
         buttonSave.addEventListener('click', saveDialogHandler);
 		buttonCancel.addEventListener('click', closeDialogHandler);
 		
 	}());	
-	
+
 	function editBank(id, name, city, amount, connections) {
+
+		var dialog = document.querySelector('#bank-modal-dialog');
 
 		$("#id")[0].value = id;
 		$("#bank")[0].value = name;
@@ -191,7 +208,7 @@
 		
 		document.checkMaterialTextFields();
 
-		document.querySelector('#bank-modal-dialog').showModal();
+		dialog.showModal();
 	}
 </script>
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mdl-card">
+<div class="mdl-card-simulation-new">
 	<div class="mdl-card__title">
 		<h3 class="mdl-card__title-text">Setup Simulation</h3>
 	</div>
@@ -16,7 +16,7 @@
 					required>
 				<label class="mdl-textfield__label" for="description">Description</label>
 			</div>
-			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			<!-- <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input 
 					class="mdl-textfield__input" 
 					type="text" pattern="-?[0-9]*(\.[0-9]+)?" 
@@ -25,8 +25,8 @@
 					required>
 				<label class="mdl-textfield__label" for="max_connections">Maximum Connections per Bank</label>
 				<span class="mdl-textfield__error">Input is not a number!</span>
-			</div>
-			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			</div> -->
+			<!-- <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input 
 					class="mdl-textfield__input" 
 					type="text" 
@@ -36,7 +36,7 @@
 					required>
 				<label class="mdl-textfield__label" for="total_amount">Total Amount per Bank</label>
 				<span class="mdl-textfield__error">Input is not a number!</span>
-			</div>
+			</div> -->
 			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input 
 					class="mdl-textfield__input" 
@@ -64,8 +64,8 @@
 		var passedValidation = function(){
 			valid =
 				$("input#description")[0].value &&
-				$("input#max_connections")[0].value &&
-				$("input#total_amount")[0].value &&
+				// $("input#max_connections")[0].value &&
+				// $("input#total_amount")[0].value &&
 				$("input#exchange_amount")[0].value;
 			return valid;
 		};

@@ -11,6 +11,10 @@ class SimulationBank extends Model
         'bank_id'
     ];
 
+	public function simulation() {
+		return $this->belongsTo('App\Simulation');
+	}    
+
 	public function bank() {
 		return $this->belongsTo('App\Bank');
 	}    

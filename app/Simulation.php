@@ -2,8 +2,6 @@
 
 namespace App;
 
-use \Debugbar;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -11,14 +9,18 @@ class Simulation extends Model
 {
 	protected $fillable = [
 		'description', 
-		'max_connections', 
         'exchange_amount',
-		'total_amount',
+		'used_amount',
+		'used_connections', 
 		'status'
     ];
 
 	public function simulationBanks() {
 		return $this->hasMany('App\SimulationBank');
+	}
+
+	public function exchanges() {
+		return $this->hasMany('App\Exchange');
 	}
 
 	public function hasSimulationBanks() {

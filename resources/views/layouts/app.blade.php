@@ -58,10 +58,10 @@
 										<!-- Right Side Of Navbar -->
 										<ul class="nav navbar-nav navbar-right">
 											<li><a href="{{ url('/banks') }}">Banks</a></li>
-											<li><a href="{{ url('/exchanges') }}">Exchanges</a></li>
 											<li><a href="{{ url('/simulations') }}">Simulations</a></li>
-											<li><a href="{{ url('/status') }}">Status</a></li>
-											<!-- <li><a href="{{ url('/about') }}">About</a></li> -->
+											<li><a href="{{ url('/exchanges') }}">Exchanges</a></li>
+											<!-- <li><a href="{{ url('/status') }}">Status</a></li> -->
+											<li><a href="{{ url('/about') }}">About</a></li>
 										</ul>
 								</div>
 						</div>

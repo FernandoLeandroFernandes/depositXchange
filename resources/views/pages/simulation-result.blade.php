@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="mdl-card">
+<div class="mdl-card-simulation-results">
 	<div class="mdl-dialog__actions mdl-dialog__actions">
 		<button id="back-button" type="button" class="mdl-button" onclick="javascript: { document.location = '/simulations'; }">Back to Simulations</button>
 	</div>
@@ -9,17 +9,33 @@
 		<h3 class="mdl-card__title-text">Simulation Results</h3>
 	</div>
 	<div class="mdl-card__actions mdl-card--border">
-		<h4>Description: {{ $simulation->description }}</h4>
-		<h4>Amount resourses (simulated/maximum): {{ '$'.number_format($simulation_total_amount, 2) }} / {{ '$'.number_format($simulation->total_amount, 2) }}</h4>
-		<h4>Exchange amount: {{ '$'.number_format($simulation->exchange_amount, 2) }}</h4>
-		<h4>Connections (simulated/maximum): {{ $simulation_max_connections}} / {{$simulation->max_connections }}</h4>
-	</div>
-	<div class="mdl-card__actions mdl-card--border">
 		<div id="mdl-table">
-			<div class="mdl-card__title">
-				<h3 class="mdl-card__title-text">Banks Simulated</h3>
-			</div>
 
+			<div class="mdl-card__title">
+				<h3 class="mdl-card__title-text">Simulation</h3>
+			</div>
+			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+				<thead>
+					<tr>
+						<th class="mdl-data-table__cell--non-numeric">Description</th>
+						<th data-sort="resources">Exchange amount</th>
+						<th data-sort="resources">Used resources</th>
+						<th data-sort="connections">Used connections</th>
+					</tr>
+				</thead>
+				<tbody class="list">
+					<tr>
+						<td class="mdl-data-table__cell--non-numeric">{{ $simulation->description }}</td>
+						<td>{{ '$'.number_format($simulation->exchange_amount, 2) }}</td>
+						<td>{{ '$'.number_format($simulation->used_amount, 2) }}</td>
+						<td>{{ $simulation->used_connections }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<br>
+			<div class="mdl-card__title">
+				<h3 class="mdl-card__title-text">Simulation Banks Status</h3>
+			</div>
 			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 				@if (count($simulationBanks) > 0)
 				<thead>
@@ -45,6 +61,36 @@
 				@endforelse
 				</tbody>
 			</table>
+			<br>
+			<div class="mdl-card__title">
+				<h3 class="mdl-card__title-text">Simulation Exchanges</h3>
+			</div>
+			<table id='mdl-table' class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+				@if (!$exchanges->isEmpty())
+				<thead>
+					<tr>
+						<!-- <th class="mdl-data-table__cell--non-numeric sort" data-sort="simulation">Simulation</th> -->
+						<th class="mdl-data-table__cell--non-numeric sort" data-sort="origin">Origin</th>
+						<th class="sort" data-sort="destination">Destination</th>
+						<th class="sort" data-sort="amount">Amount</th>
+					</tr>
+				</thead>
+				@endif
+
+				<tbody class="list">
+				@forelse ($exchanges as $exchange)
+					<tr>
+						<!-- <td class="mdl-data-table__cell--non-numeric origin">{{ $exchange->simulation->description }}</td> -->
+						<td class="mdl-data-table__cell--non-numeric origin">{{ $exchange->origin->name }}</td>
+						<td class="destination">{{ $exchange->destination->name }}</td>
+						<!-- <td class="amount">{{ '$'.$exchange->amount }}</td> -->
+						<td>{{ '$'.number_format($exchange->amount, 2) }}</td>
+					</tr>
+				@empty
+					<p>No exchanges found.</p>
+				@endforelse
+				</tbody>
+			</table>
 
 			<!-- <form id="simulation-bank" action="/simulation/setup" method="POST">
 				{{ csrf_field() }}
@@ -56,6 +102,10 @@
 			</form> -->
 		</div>
 	</div>
+	<br>
+	<div class="mdl-dialog__actions mdl-dialog__actions">
+		<button id="back-button" type="button" class="mdl-button" onclick="javascript: { document.location = '/simulations'; }">Back to Simulations</button>
+	</div>	
 </div>
 @endsection
 

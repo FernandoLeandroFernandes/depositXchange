@@ -8358,17 +8358,58 @@ button.close {
 }
 
 body {
+  background: url("/img/escheresque.png");
   padding: 20px;
   padding-left: 20px;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
-  background: #fafafa;
   position: relative;
 }
 
-div.mdl-card {
-  width: 1200px;
+div.mdl-card-banks {
+  width: 800px;
   margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-exchanges {
+  width: 700px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulations {
+  width: 1180px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-new {
+  width: 580px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-setup {
+  width: 750px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-results {
+  width: 620px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f591;
+}
+
+div.mdl-card__actions {
+  padding: 8px 20px 8px 20px;
 }
 
 div.mdl-card__supporting-text {
@@ -8436,7 +8477,7 @@ th.sort.desc:after {
 }
 
 .mdl-dialog {
-  border: none;
+  border: 1px;
   -webkit-box-shadow: 0 9px 46px 8px rgba(0, 0, 0, 0.14), 0 11px 15px -7px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.2);
           box-shadow: 0 9px 46px 8px rgba(0, 0, 0, 0.14), 0 11px 15px -7px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.2);
   width: 400px;

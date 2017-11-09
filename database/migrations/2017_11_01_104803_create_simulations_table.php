@@ -18,9 +18,9 @@ class CreateSimulationsTable extends Migration
             $table->increments('id');
 
             $table->string('description');
-            $table->integer('max_connections');
-            $table->decimal('exchange_amount', 5, 2);
-            $table->decimal('total_amount', 5, 2);
+            $table->integer('max_connections')->default(0);
+            $table->decimal('exchange_amount', 5, 2)->default(0);
+            $table->decimal('total_amount', 5, 2)->default(0);
             $table->boolean('status')->default(false);
             
             $table->timestamps();

@@ -47,7 +47,7 @@
 							class="mdl-button mdl-js-button mdl-button--colored"
 							onclick="javascript:{ document.location = '/simulation/{{($simulation->isConsolidated())?'results':'setup'}}?noupdate=on&simulation={{ $simulation->id }}'; }">
 							<i class="material-icons">search</i>
-					  	</button>	
+					  	</button>
 						<button 
 							id="delete-simulation" 
 							class="mdl-button mdl-js-button mdl-button--colored"

@@ -16,53 +16,60 @@ body {
 }
 
 div.mdl-card-banks {
-	width: 1160px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
-  
-  div.mdl-card-exchanges {
-	width: 720px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
-  
-  div.mdl-card-simulations {
-	width: 1180px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
-  
-  div.mdl-card-simulation-new {
-	width: 580px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
-  
-  div.mdl-card-simulation-setup {
-	width: 810px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
-  
-  div.mdl-card-simulation-results {
-	width: 810px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f591;
-  }
+  width: 1220px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
 
-  div.mdl-card-about {
-	width: 800px;
-	margin: 0 auto;
-	padding: 10px 10px 20px 10px;
-	background: #f5f5f563;
-  }
+div.mdl-card-bank-details {
+  width: 820px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-exchanges {
+  width: 720px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulations {
+  width: 1180px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-new {
+  width: 580px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-setup {
+  width: 810px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-simulation-results {
+  width: 810px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f591;
+}
+
+div.mdl-card-about {
+  width: 800px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
   
 div.mdl-card__actions {
 	padding: 8px 20px 8px 20px;

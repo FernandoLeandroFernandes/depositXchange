@@ -77,6 +77,32 @@ class PagesController extends Controller {
 				]
 			);
 			return response()->json($bank);
+
+		} else if ($action == "details") {
+
+			if ($request->input('bank')) {
+
+				$bank_id = (int)$request->input('bank');
+
+				$bank = DB::select('
+					select "banks".id, "banks"."name", "banks"."city", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+					from "banks"
+					left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "banks"."id")
+					where  "banks".id = ?
+					group by "banks"."id";',
+					[$bank_id])[0];
+
+				$exchanges = DB::select('
+					select "sm"."description" as "simulation", "bo"."id" as "origin_id", "bo"."name" as "origin_name", "bd"."id" as "destination_id", "bd"."name" as "destination_name", "ex"."amount"
+					from "exchanges" as "ex"
+					left outer join "simulations" as "sm" on ("sm"."id" = "ex"."simulation_id")
+					left outer join "banks" as "bo" on ("bo"."id" = "ex"."origin_id")
+					left outer join "banks" as "bd" on ("bd"."id" = "ex"."destination_id")
+					where "ex"."consolidated" = 1 AND ("bo".id = '.$bank_id.' OR "bd".id = '.$bank_id.')
+					order by "ex"."id";');
+
+				return view('pages.banks-detail', compact('bank', 'exchanges'));
+			}
 		}
 
 		$banks = Bank::paginate(20);
@@ -246,7 +272,10 @@ class PagesController extends Controller {
 													$this->availableAmount($originBank),
 													$this->availableAmount($destinationBank)]);
 
-							if ($exchange_amount) {
+							$availableConnections = min([$this->availableConnections($originBank),
+															$this->availableConnections($destinationBank)]);
+
+							if ($exchange_amount && $availableConnections) {
 
 								Exchange::create([
 									'simulation_id' => $simulation->id,

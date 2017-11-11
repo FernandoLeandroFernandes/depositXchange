@@ -29,12 +29,13 @@
 					<tr>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="bank">Bank</th>
 						<th class="mdl-data-table__cell--non-numeric sort" data-sort="city">City</th>
-						<th data-sort="amount">Available resources</th>
-						<th data-sort="amount">Total resources</th>
-						<th data-sort="amount">Usage(%)</th>
-						<th data-sort="connections">Max. Connections</th>
-						<th data-sort="connections">Connections</th>
+						<th data-sort="max_amount">Total resources</th>
+						<th data-sort="available_amount">Available resources</th>
+						<th data-sort="usage">Usage(%)</th>
+						<th data-sort="max_connections">Max. Connections</th>
+						<th data-sort="used_connections">Used Connections</th>
 						<th>Actions</th>
+						<!-- <th>Actions</th> -->
 					</tr>
 				</thead>
 				<tbody class="list">
@@ -44,18 +45,30 @@
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric bank">{{ substr($bank->name, 0, 30) }}</td>
 						<td class="mdl-data-table__cell--non-numeric city">{{ $bank->city }}</td>
-						<td class="amount">{{ '$'.number_format($bank->max_amount-$bank->used_amount, 2) }}</td>
 						<td class="amount">{{ '$'.number_format($bank->max_amount, 2) }}</td>
+						<td class="amount">{{ '$'.number_format($bank->max_amount-$bank->used_amount, 2) }}</td>
 						<td class="amount">{{ number_format($bank->used_amount/(($bank->max_amount>0)?$bank->max_amount:1), 2).'%' }}</td>
 						<td class="connections">{{ $bank->max_connections }}</td>
 						<td class="connections">{{ $bank->used_connections }}</td>
 						<td>
+							<button 
+								class="mdl-button mdl-js-button mdl-button--colored"
+								onclick="javascript:{ editBank({{ $bank->id }}, '{{ $bank->name }}', '{{ $bank->city }}', {{ $bank->max_amount }}, {{ $bank->max_connections }}); }">
+								<i class="material-icons">edit</i>
+							</button>
+							<button 
+								class="mdl-button mdl-js-button mdl-button--colored"
+								onclick="javascript:{ document.location = '/bank/details?bank={{ $bank->id }}'; }">
+								<i class="material-icons">search</i>
+							</button>
+						</td>
+						<!-- <td>
 						<button 
 							class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
 							onclick="javascript:{ editBank({{ $bank->id }}, '{{ $bank->name }}', '{{ $bank->city }}', {{ $bank->max_amount }}, {{ $bank->max_connections }}); }">
 							Edit
 						</button>
-						</td>
+						</td> -->
 					</tr>
 
 				@empty

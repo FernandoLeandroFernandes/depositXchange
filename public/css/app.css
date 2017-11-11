@@ -8367,7 +8367,14 @@ body {
 }
 
 div.mdl-card-banks {
-  width: 1160px;
+  width: 1220px;
+  margin: 0 auto;
+  padding: 10px 10px 20px 10px;
+  background: #f5f5f563;
+}
+
+div.mdl-card-bank-details {
+  width: 820px;
   margin: 0 auto;
   padding: 10px 10px 20px 10px;
   background: #f5f5f563;

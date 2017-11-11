@@ -1,11 +1,3 @@
-# DepositXchange project
+# Welcome to DepositXchange!
 
-
-
-## Instalation
-
-To configure the Homestead Vagrant box cofigured for this project, run the command below in a terminal:
-
-```
-$ bash <(curl -s https://raw.githubusercontent.com/FernandoLeandroFernandes/bundesliga/master/install.sh)
-```
+This application was designed to simulate, and keep track, of FDIC insured deposits between banks.

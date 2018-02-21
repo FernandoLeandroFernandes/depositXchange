@@ -102,7 +102,7 @@
 					<td>
 					<button 
 						class="buttom-sm mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-						onclick="javascript:{ removeSimulationBank({{ $simulation->id }}, {{ $selectedBank->bank_id }}); }">
+						onclick="javascript:{ removeSimulationBank({{ $selectedBank->simulation_bank_id }}); }">
 						Remove
 					</button>
 					</td>
@@ -271,7 +271,7 @@
 		$("form#simulation-bank").submit();
 	}
 
-	function removeSimulationBank(simulation, bank) {
+	function removeSimulationBank(simulation_bank_id) {
 
 		// $.ajax({
 		// 	url: '/simulation/setup',
@@ -295,7 +295,7 @@
 		// });
 	
 		$("form#simulation-bank input#operation")[0].value = 'remove';
-		$("form#simulation-bank input#simulation_bank-id")[0].value = bank;
+		$("form#simulation-bank input#simulation_bank-id")[0].value = simulation_bank_id;
 		$("form#simulation-bank").submit();
 	}
 

@@ -180,7 +180,7 @@ class PagesController extends Controller {
 			}
 
 			$selectedBanks = DB::select('
-				select "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
+				select "simulation_banks".id as "simulation_bank_id", "banks".id as "bank_id", "banks"."name" as "bank_name", "banks".max_amount, "banks".max_connections, sum("exchanges"."amount") as used_amount, count("exchanges"."origin_id") as used_connections
 				from "simulation_banks"
 				left outer join "exchanges" on ("exchanges"."consolidated" = 1 AND "exchanges"."origin_id" = "simulation_banks"."bank_id")
 				left outer join "banks" on ("banks"."id" = "simulation_banks"."bank_id")
@@ -256,7 +256,6 @@ class PagesController extends Controller {
 					$count = (count($simulation->simulationBanks));
 					$simulation_max_connections = $count*($count-1);
 					$simulation_exchange_amount = $simulation->exchange_amount;
-					// $simulation_total_amount = $simulation->total_amount;
 
 					$this->data = array();
 
